@@ -7,9 +7,9 @@ Gem::Specification.new do |s|
   s.version     = NagiosCheck::VERSION
   s.authors     = ["Dominique Broeglin"]
   s.email       = ["dominique.broeglin@gmail.com"]
-  s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.homepage    = "https://github.com/dbroeglin/nagios_check"
+  s.summary     = %q{Ruby Nagios Check Integration}
+  s.description = %q{An easy to use DSL for building custom probes for the Nagios monitoring system}
 
   s.rubyforge_project = "nagios_check"
 

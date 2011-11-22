@@ -1,1 +1,22 @@
-WIP
+= Nagios Check 
+
+License:: MIT license (see MIT-LICENSE file) 
+Copyright:: 2011 Dominique Broeglin 
+
+
+== DESCRIPTION
+
+An easy to use DSL for building custom probes for the Nagios monitoring system.
+
+== FEATURES
+
+* Provide a simple to use DSL for building your own probes.
+* Decode command line options.
+* Report status data to Nagios. 
+* Report performance data to Nagios. 
+
+
+== RESOURCES
+
+* {Website}[https://github.com/dbroeglin/nagios_check]
+* {Source Code}[https://github.com/dbroeglin/nagios_check]
