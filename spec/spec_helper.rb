@@ -1,4 +1,4 @@
-require 'nagios_check/range'
+require 'nagios_check'
 
 module Matchers
   class Contain

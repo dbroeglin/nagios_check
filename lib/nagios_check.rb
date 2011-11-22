@@ -1,15 +1,63 @@
 require "nagios_check/version"
 require 'optparse'
 require 'ostruct'
+require 'timeout'
 
 require 'nagios_check/range'
 
 module NagiosCheck
   attr_reader :options
+  attr_accessor :message
+
+  def prepare
+    @values = {}
+    self.message = nil
+  end
 
   def run
+    prepare
     parse_options
-    check()
+    return_val, status = 3, "UNKNOWN"
+    begin
+      if @timeout
+        check_with_timeout
+      else
+        check
+      end
+      return_val, status = finish
+    rescue Timeout::Error
+      store_message "TIMEOUT after #{@timeout}s"
+    rescue => e
+      store_message "INTERNAL ERROR: #{e}"
+    end
+    msg = status
+    msg += ': ' + message if message
+    if @values && !@values.empty? 
+      msg += '|' + @values.map do |name, value|
+        "#{name}=#{value};;;;"
+      end.join(' ')
+    end
+    puts msg 
+    exit return_val
+  end
+
+  def store_message(message)
+    self.message = message
+  end
+
+  def finish
+    value = @values.first.last
+    if @critical_range && !@critical_range.include?(value)
+      return [2, "CRITICAL"]
+    end
+    if @warning_range && !@warning_range.include?(value)
+      return [1, "WARNING"]
+    end
+    return [0, "OK"]
+  end
+
+  def store_value(name, value, opts = {})
+    @values[name] = value.to_f
   end
 
   module ClassMethods
@@ -21,6 +69,28 @@ module NagiosCheck
       @defaults[name] = opts[:default] if opts.has_key?(:default)
       Proc::new do |value|
         self.options.send "#{name}=", value
+      end
+    end
+
+    def defaults
+      @defaults
+    end
+
+    def enable_warning(*args)
+      on("-w RANGE", *args) do |value| 
+        @warning_range = NagiosCheck::Range.new(value) 
+      end
+    end
+
+    def enable_critical(*args)
+      on("-c RANGE", *args) do |value| 
+        @critical_range = NagiosCheck::Range.new(value) 
+      end
+    end
+    
+    def enable_timeout(*args)
+      on("-t TIMEOUT", *args) do |value| 
+        @timeout = value.to_f 
       end
     end
   end
@@ -36,20 +106,22 @@ module NagiosCheck
   private
 
   def opt_parse
-    @opt_parse ||= OptionParser::new
+    unless @opt_parse
+      opt_parse = OptionParser::new
+      self.class.instance_variable_get("@ons").each do |args, req, block|
+        opt_parse.on(*args) {|value| instance_exec(value, &block) }
+      end 
+      @opt_parse = opt_parse
+    end
+    @opt_parse 
   end
 
-  def parse_options
-    @options = OpenStruct::new(self.class.instance_variable_get("@defaults"))
-    self.class.instance_variable_get("@ons").each do |args, req, block|
-      opt_parse.on(*args) {|value| instance_exec(value, &block) }
-    end 
-    opt_parse.on("-w PATTERN") do |value|
-      @warning = value
-    end
-    opt_parse.on("-c PATTERN") do |value|
-      @critical = value
-    end
-    opt_parse.parse!
+  def parse_options(argv = ARGV)
+    @options = OpenStruct::new(self.class.defaults)
+    opt_parse.parse!(argv)
+  end
+
+  def check_with_timeout
+    Timeout.timeout(@timeout) { check } 
   end
 end
