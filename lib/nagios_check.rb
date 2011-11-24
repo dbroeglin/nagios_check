@@ -62,12 +62,14 @@ module NagiosCheck
 
   module ClassMethods
     def on(*args, &block)
-      @ons << [args, args.delete(:required), block]
+      @ons << [args, args.delete(:mandatory), block]
     end
 
     def store(name, opts = {})
       @defaults[name] = opts[:default] if opts.has_key?(:default)
+      transform = opts[:transform]
       Proc::new do |value|
+        value = value.send transform if transform
         self.options.send "#{name}=", value
       end
     end
@@ -108,8 +110,10 @@ module NagiosCheck
   def opt_parse
     unless @opt_parse
       opt_parse = OptionParser::new
-      self.class.instance_variable_get("@ons").each do |args, req, block|
-        opt_parse.on(*args) {|value| instance_exec(value, &block) }
+      self.class.instance_variable_get("@ons").each do |args, mand, block|
+        opt_parse.on(*args) do |value| 
+          instance_exec(value, &block) 
+        end
       end 
       @opt_parse = opt_parse
     end
@@ -121,7 +125,11 @@ module NagiosCheck
     opt_parse.parse!(argv)
   end
 
+
   def check_with_timeout
     Timeout.timeout(@timeout) { check } 
+  end
+
+  class MissingOption < StandardError
   end
 end
