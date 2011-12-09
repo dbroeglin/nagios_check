@@ -38,7 +38,7 @@ require "nagios_check"
 class SimpleCheck
   include NagiosCheck
 
-  on "-H HOST", :required, &store(:host)
+  on "-H HOST", :mandatory, &store(:host)
   on "-P PORT",            &store(:port, default: 8080, transform: :to_i)
 
   enable_warning

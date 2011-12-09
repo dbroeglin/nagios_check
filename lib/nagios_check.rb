@@ -9,6 +9,7 @@ module NagiosCheck
   attr_reader :options
   attr_accessor :message
 
+
   def prepare
     @values = {}
     self.message = nil
@@ -62,7 +63,8 @@ module NagiosCheck
 
   module ClassMethods
     def on(*args, &block)
-      @ons << [args, args.delete(:mandatory), block]
+      mandatory = args.delete(:mandatory)
+      @option_specs[option_name(args.first)] = [args, mandatory,  block]
     end
 
     def store(name, opts = {})
@@ -76,7 +78,7 @@ module NagiosCheck
 
     def defaults
       @defaults
-    end
+    end  
 
     def enable_warning(*args)
       on("-w RANGE", *args) do |value| 
@@ -95,12 +97,34 @@ module NagiosCheck
         @timeout = value.to_f 
       end
     end
+    
+    def check_options!(options)
+      @option_specs.each do |name, spec|
+        if spec[1] == :mandatory && options.send(name).nil? 
+          raise MissingOption.new(name)
+        end
+      end
+    end
+
+    private
+
+    def option_name(arg) 
+      if arg =~ /^--\[no-\]([^-\s][^\s]*)/
+        $1.to_sym
+      elsif arg =~ /^--([^-\s][^\s]*)/
+        $1.to_sym
+      elsif arg =~ /^-([^-\s][^\s]*)/
+        $1.to_sym
+      else
+        raise "Unable to parse option '#{arg}'" 
+      end
+    end
   end
 
   def self.included(base)
     base.extend(ClassMethods)
     base.instance_eval do 
-      @ons = []
+      @option_specs = {} 
       @defaults = {}
     end
   end
@@ -110,7 +134,8 @@ module NagiosCheck
   def opt_parse
     unless @opt_parse
       opt_parse = OptionParser::new
-      self.class.instance_variable_get("@ons").each do |args, mand, block|
+      self.class.instance_variable_get("@option_specs").each do |name, spec|
+        args, mand, block = spec
         opt_parse.on(*args) do |value| 
           instance_exec(value, &block) 
         end
@@ -123,6 +148,7 @@ module NagiosCheck
   def parse_options(argv = ARGV)
     @options = OpenStruct::new(self.class.defaults)
     opt_parse.parse!(argv)
+    self.class.check_options!(@options)
   end
 
 
@@ -130,6 +156,6 @@ module NagiosCheck
     Timeout.timeout(@timeout) { check } 
   end
 
-  class MissingOption < StandardError
-  end
+  class MissingOption < StandardError; end
+  class MissingOption < StandardError; end
 end

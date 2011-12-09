@@ -89,4 +89,21 @@ describe NagiosCheck do
       }.should raise_error(OptionParser::InvalidOption)
     end
   end
+  
+  context "when a mandatory option is specified" do
+    subject do
+      Class::new do
+        include NagiosCheck
+        on "-a VALUE", :mandatory, &store(:a)
+      end.new
+    end
+
+    it "fails if -a is not given" do
+      lambda {
+        subject.send :parse_options, %w{} 
+      }.should raise_error(NagiosCheck::MissingOption)
+    end
+
+    specify { subject.send :parse_options, %w{-a foo} }
+  end
 end
