@@ -38,8 +38,8 @@ require "nagios_check"
 class SimpleCheck
   include NagiosCheck
 
-  on "-H HOST", :mandatory, &store(:host)
-  on "-P PORT",            &store(:port, default: 8080, transform: :to_i)
+  on "--host HOST", "-H HOST", :mandatory
+  on "--port PORT", "-P PORT", Integer, default: 8080
 
   enable_warning
   enable_critical

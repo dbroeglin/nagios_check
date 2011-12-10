@@ -60,8 +60,8 @@ describe NagiosCheck do
     subject do
       Class::new do
         include NagiosCheck
-        on "-a VALUE", &store(:a)
-        on "-b VALUE", &store(:b, transform: :to_i)
+        on "-a VALUE"
+        on "-b VALUE", Integer
       end.new
     end
 
@@ -90,11 +90,11 @@ describe NagiosCheck do
     end
   end
   
-  context "when a mandatory option is specified" do
+  context "when a mandatory option is specified in arg list" do
     subject do
       Class::new do
         include NagiosCheck
-        on "-a VALUE", :mandatory, &store(:a)
+        on "-a VALUE", :mandatory, Float
       end.new
     end
 
@@ -104,6 +104,63 @@ describe NagiosCheck do
       }.should raise_error(NagiosCheck::MissingOption)
     end
 
-    specify { subject.send :parse_options, %w{-a foo} }
+    it "parses option a 3.14" do 
+      subject.send :parse_options, %w{-a 3.14} 
+      subject.options.a.should == 3.14
+    end
+  end
+
+  context "when a mandatory option is specified in option params hash" do
+    subject do
+      Class::new do
+        include NagiosCheck
+        on "-a VALUE", Float, mandatory: true
+      end.new
+    end
+
+    it "fails if -a is not given" do
+      lambda {
+        subject.send :parse_options, %w{} 
+      }.should raise_error(NagiosCheck::MissingOption)
+    end
+
+    it "parses option a 3.14" do 
+      subject.send :parse_options, %w{-a 3.14} 
+      subject.options.a.should == 3.14
+    end
+  end
+
+  shared_examples_for "default provided" do
+    it "defaults to 3.14" do
+      subject.send :parse_options, %w{} 
+      subject.options.a.should == 3.14 
+    end
+
+    it "parses option a at 1.4142" do 
+      subject.send :parse_options, %w{-a 1.4142}
+      subject.options.a.should == 1.4142
+    end
+  end
+
+  context "when a default is provided" do
+    subject do
+      Class::new do
+        include NagiosCheck
+        on "-a VALUE", Float, default: 3.14
+      end.new
+    end
+
+    it_behaves_like "default provided"
+  end
+
+  context "when a default is provided and option is mandatory" do
+    subject do
+      Class::new do
+        include NagiosCheck
+        on "-a VALUE", Float, default: 3.14, mandatory: true
+      end.new
+    end
+
+    it_behaves_like "default provided"
   end
 end

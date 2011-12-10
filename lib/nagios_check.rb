@@ -63,17 +63,15 @@ module NagiosCheck
 
   module ClassMethods
     def on(*args, &block)
-      mandatory = args.delete(:mandatory)
-      @option_specs[option_name(args.first)] = [args, mandatory,  block]
-    end
-
-    def store(name, opts = {})
-      @defaults[name] = opts[:default] if opts.has_key?(:default)
-      transform = opts[:transform]
-      Proc::new do |value|
-        value = value.send transform if transform
-        self.options.send "#{name}=", value
+      name = option_name(args.first)
+      option_params = {
+        mandatory: args.delete(:mandatory) ? true : false
+      }
+      if args.last.respond_to? :has_key? 
+        option_params.merge! args.pop
       end
+      @defaults[name] = option_params[:default] if option_params.has_key? :default
+      @option_specs[name] = [args, option_params,  block]
     end
 
     def defaults
@@ -100,7 +98,8 @@ module NagiosCheck
     
     def check_options!(options)
       @option_specs.each do |name, spec|
-        if spec[1] == :mandatory && options.send(name).nil? 
+        _, option_params, _ = spec
+        if option_params[:mandatory] && options.send(name).nil? 
           raise MissingOption.new(name)
         end
       end
@@ -135,7 +134,12 @@ module NagiosCheck
     unless @opt_parse
       opt_parse = OptionParser::new
       self.class.instance_variable_get("@option_specs").each do |name, spec|
-        args, mand, block = spec
+        args, option_params, block = spec
+        if block.nil?
+          block = Proc::new do |value|
+            self.options.send "#{name}=", value
+          end
+        end
         opt_parse.on(*args) do |value| 
           instance_exec(value, &block) 
         end
