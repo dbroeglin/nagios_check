@@ -29,7 +29,7 @@ Features
 Usage and documentation
 -----------------------
 
-NagiosCheck is a module. To use it simply include it in a class and declare
+NagiosCheck is a module. To use it, simply include it in a class and declare
 how the check should behave:
 
 ``` ruby

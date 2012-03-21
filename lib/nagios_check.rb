@@ -17,9 +17,9 @@ module NagiosCheck
 
   def run
     prepare
-    parse_options
     return_val, status = 3, "UNKNOWN"
     begin
+      parse_options
       if @timeout
         check_with_timeout
       else
@@ -28,6 +28,8 @@ module NagiosCheck
       return_val, status = finish
     rescue Timeout::Error
       store_message "TIMEOUT after #{@timeout}s"
+    rescue OptionParser::InvalidArgument, NagiosCheck::MissingOption => e
+      store_message "CLI ERROR: #{e}"
     rescue => e
       store_message "INTERNAL ERROR: #{e}"
     end
@@ -160,6 +162,13 @@ module NagiosCheck
     Timeout.timeout(@timeout) { check } 
   end
 
-  class MissingOption < StandardError; end
-  class MissingOption < StandardError; end
+  class MissingOption < StandardError; 
+    def initialize(name)
+      @name = name
+    end
+
+    def to_s
+      "missing option: '#{@name}'"
+    end
+  end
 end
