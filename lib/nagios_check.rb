@@ -50,10 +50,10 @@ module NagiosCheck
 
   def finish
     value = @values.first.last
-    if @critical_range && !@critical_range.include?(value)
+    if @options.c && !@options.c.include?(value)
       return [2, "CRITICAL"]
     end
-    if @warning_range && !@warning_range.include?(value)
+    if @options.w && !@options.w.include?(value)
       return [1, "WARNING"]
     end
     return [0, "OK"]
@@ -82,19 +82,19 @@ module NagiosCheck
 
     def enable_warning(*args)
       on("-w RANGE", *args) do |value| 
-        @warning_range = NagiosCheck::Range.new(value) 
+        self.options.w = NagiosCheck::Range.new(value) 
       end
     end
 
     def enable_critical(*args)
       on("-c RANGE", *args) do |value| 
-        @critical_range = NagiosCheck::Range.new(value) 
+        self.options.c = NagiosCheck::Range.new(value) 
       end
     end
 
     def enable_timeout(*args)
       on("-t TIMEOUT", *args) do |value| 
-        @timeout = value.to_f 
+        self.options.t = value.to_f 
       end
     end
 
@@ -159,7 +159,7 @@ module NagiosCheck
 
 
   def check_with_timeout
-    Timeout.timeout(@timeout) { check } 
+    Timeout.timeout(@options.t) { check } 
   end
 
   class MissingOption < StandardError; 
