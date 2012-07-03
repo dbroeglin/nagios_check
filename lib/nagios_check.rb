@@ -67,7 +67,7 @@ module NagiosCheck
     def on(*args, &block)
       name = option_name(args.first)
       option_params = {
-        mandatory: args.delete(:mandatory) ? true : false
+        :mandatory => args.delete(:mandatory) ? true : false
       }
       if args.last.respond_to? :has_key? 
         option_params.merge! args.pop
