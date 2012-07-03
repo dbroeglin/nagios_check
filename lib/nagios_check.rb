@@ -78,7 +78,7 @@ module NagiosCheck
 
     def defaults
       @defaults
-    end  
+    end
 
     def enable_warning(*args)
       on("-w RANGE", *args) do |value| 
@@ -91,13 +91,13 @@ module NagiosCheck
         @critical_range = NagiosCheck::Range.new(value) 
       end
     end
-    
+
     def enable_timeout(*args)
       on("-t TIMEOUT", *args) do |value| 
         @timeout = value.to_f 
       end
     end
-    
+
     def check_options!(options)
       @option_specs.each do |name, spec|
         _, option_params, _ = spec
