@@ -31,16 +31,16 @@ module NagiosCheck
     rescue OptionParser::InvalidArgument, NagiosCheck::MissingOption => e
       store_message "CLI ERROR: #{e}"
     rescue => e
-      store_message "INTERNAL ERROR: #{e}"
+      store_message "INTERNAL ERROR: #{e.to_s.gsub(/[\r\n]+/, ' ')}"
     end
     msg = status
     msg += ': ' + message if message
-    if @values && !@values.empty? 
+    if @values && !@values.empty?
       msg += '|' + @values.map do |name, value|
         "#{name}=#{value};;;;"
       end.join(' ')
     end
-    puts msg 
+    puts msg
     exit return_val
   end
 
@@ -49,6 +49,7 @@ module NagiosCheck
   end
 
   def finish
+    raise "No value was provided" if @values.empty?
     value = @values.first.last
     if @options.c && !@options.c.include?(value)
       return [2, "CRITICAL"]

@@ -1,15 +1,15 @@
 require 'spec_helper'
 def before_finish_test
-  before(:each) do 
-    subject.prepare 
-    description = example.metadata[:example_group][:example_group][:description_args].first 
-    if /^when options are '(.*)'$/ =~ description
-      subject.send :parse_options, $1.split 
+  before(:each) do
+    subject.prepare
+    description = example.metadata[:example_group][:example_group][:description_args].first
+    if description.kind_of?(String) && /^when options are '(.*)'$/ =~ description
+      subject.send :parse_options, $1.split
     end
-    
-    description = example.metadata[:example_group][:description_args].first 
-    if /^when value is (.*)$/ =~ description
-      subject.store_value 'val', $1.to_f 
+
+    description = example.metadata[:example_group][:description_args].first
+    if description.kind_of?(String) && /^when value is (.*)$/ =~ description
+      subject.store_value 'val', $1.to_f
     end
   end
 end
@@ -31,8 +31,14 @@ end
 
 describe OkTestCheck do
   before_finish_test
-  
+
   context "when options are ''" do
+    it "should fail when no value is given" do
+      lambda {
+        subject.finish
+      }.should raise_error(RuntimeError, "No value was provided")
+    end
+
     context "when value is 0" do
       specify { subject.finish.should == [0, "OK"] }
     end
@@ -43,11 +49,10 @@ describe OkTestCheck do
       specify { subject.finish.should == [0, "OK"] }
     end
   end
-
 end
 
 describe WarningTestCheck do
-  before_finish_test 
+  before_finish_test
 
   context "when options are '-w 10'" do
     context "when value is -1" do
@@ -69,7 +74,7 @@ describe WarningTestCheck do
 end
 
 describe CriticalTestCheck do
-  before_finish_test 
+  before_finish_test
 
   context "when options are '-w 10 -c 20'" do
     context "when value is -1" do
