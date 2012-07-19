@@ -64,6 +64,16 @@ If the value returned by `do_some_check` is between 0 and 4 inclusive the result
 
 If the check method lasts more than 10 seconds, it times out and the returned value is UNKNOWN.
 
+An alternative shorter way of writting the above check would be:
+
+```ruby
+def check
+  time(value_name: 'duration' do
+    do_some_check(options.host, options.port)
+  end
+end
+```
+
 License
 -------
 Released under the MIT License.  See the [MIT-LICENSE][license] file for further details.

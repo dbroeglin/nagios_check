@@ -4,8 +4,11 @@ require 'ostruct'
 require 'timeout'
 
 require 'nagios_check/range'
+require 'nagios_check/chronometer'
 
 module NagiosCheck
+  include Chronometer
+
   attr_reader :options
   attr_accessor :message
 
