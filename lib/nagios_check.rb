@@ -31,7 +31,7 @@ module NagiosCheck
     rescue OptionParser::InvalidArgument, NagiosCheck::MissingOption => e
       store_message "CLI ERROR: #{e}"
     rescue => e
-      store_message "INTERNAL ERROR: #{e.to_s.gsub(/[\r\n]+/, ' ')}"
+      store_message "INTERNAL ERROR: #{e.class.name}: #{(e.to_s || '').gsub(/[\r\n]+/, ' ')}"
     end
     msg = status
     msg += ': ' + message if message
