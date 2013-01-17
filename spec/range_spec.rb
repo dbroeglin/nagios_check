@@ -36,12 +36,12 @@ describe NagiosCheck::Range do
   end
   
   context "when pattern is @:10" do
-    it { should_not contain -1 } 
-    it { should_not contain 0 } 
-    it { should     contain 5 } 
-    it { should_not contain 10 } 
-    it { should_not contain 10.0 } 
-    it { should_not contain 11 } 
+    it { should     contain -1 }
+    it { should_not contain 0 }
+    it { should_not contain 5 }
+    it { should_not contain 10 }
+    it { should_not contain 10.0 }
+    it { should     contain 11 }
   end
 
   context "when pattern is 10:" do
@@ -55,13 +55,13 @@ describe NagiosCheck::Range do
   end
   
   context "when pattern is @10:" do
-    it { should_not contain -1 } 
-    it { should_not contain 1 } 
-    it { should_not contain 9.9 } 
-    it { should_not contain 10 } 
-    it { should_not contain 10.0 } 
-    it { should     contain 10.1 } 
-    it { should     contain 11 } 
+    it { should     contain -1 }
+    it { should     contain 1 }
+    it { should     contain 9.9 }
+    it { should_not contain 10 }
+    it { should_not contain 10.0 }
+    it { should_not contain 10.1 }
+    it { should_not contain 11 }
   end
 
   context "when pattern is 10:11" do
@@ -77,28 +77,54 @@ describe NagiosCheck::Range do
     it { should_not contain 12 } 
   end
   
+  context "when pattern is 10:10" do
+    it { should_not contain -1 }
+    it { should_not contain 1 }
+    it { should_not contain 9.9 }
+    it { should     contain 10 }
+    it { should     contain 10.0 }
+    it { should_not contain 10.1 }
+    it { should_not contain 10.9 }
+    it { should_not contain 11 }
+    it { should_not contain 11.1 }
+    it { should_not contain 12 }
+  end
+
+  context "when pattern is @10:10" do
+    it { should_not contain -1 }
+    it { should_not contain 1 }
+    it { should_not contain 9.9 }
+    it { should_not contain 10 }
+    it { should_not contain 10.0 }
+    it { should_not contain 10.1 }
+    it { should_not contain 10.9 }
+    it { should_not contain 11 }
+    it { should_not contain 11.1 }
+    it { should_not contain 12 }
+  end
+
   context "when pattern is @10:11" do
-    it { should_not contain -1 } 
-    it { should_not contain 1 } 
-    it { should_not contain 9.9 } 
+    it { should     contain -1 }
+    it { should     contain 1 }
+    it { should     contain 9.9 }
     it { should_not contain 10 } 
     it { should_not contain 10.0 } 
-    it { should     contain 10.1 } 
+    it { should_not contain 10.1 }
     it { should_not contain 11 } 
-    it { should_not contain 11.1 } 
-    it { should_not contain 12 } 
+    it { should     contain 11.1 }
+    it { should     contain 12 }
   end
 
   context "when pattern is @10.05:11.05" do
-    it { should_not contain -1 } 
-    it { should_not contain 1 } 
-    it { should_not contain 9.9 } 
-    it { should_not contain 10 } 
-    it { should_not contain 10.0 } 
-    it { should     contain 10.1 } 
-    it { should     contain 11 } 
-    it { should_not contain 11.1 } 
-    it { should_not contain 12 } 
+    it { should     contain -1 }
+    it { should     contain 1 }
+    it { should     contain 9.9 }
+    it { should     contain 10 }
+    it { should     contain 10.0 }
+    it { should_not contain 10.1 }
+    it { should_not contain 11 }
+    it { should     contain 11.1 }
+    it { should     contain 12 }
   end
 
   context "when pattern is -1:1" do
@@ -120,11 +146,11 @@ describe NagiosCheck::Range do
   end
   
   context "when pattern is @~:1" do
-    it { should     contain -2 } 
-    it { should     contain -1 } 
-    it { should     contain 0 } 
+    it { should_not contain -2 }
+    it { should_not contain -1 }
+    it { should_not contain 0 }
     it { should_not contain 1 } 
-    it { should_not contain 2 } 
+    it { should     contain 2 }
   end
 
   context "when nil pattern" do 
