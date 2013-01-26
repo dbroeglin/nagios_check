@@ -94,8 +94,8 @@ describe NagiosCheck::Range do
     it { should_not alert_if -1 }
     it { should_not alert_if 1 }
     it { should_not alert_if 9.9 }
-    it { should_not alert_if 10 }
-    it { should_not alert_if 10.0 }
+    it { should     alert_if 10 }
+    it { should     alert_if 10.0 }
     it { should_not alert_if 10.1 }
     it { should_not alert_if 10.9 }
     it { should_not alert_if 11 }

@@ -19,19 +19,8 @@ module NagiosCheck
     end
 
     def include?(value)
-      if @inverse
-        if @max.nil?
-          (@min.nil? || value < @min)
-        elsif @min.nil?
-          (@max.nil? || value > @max)
-        elsif @min == @max
-          false
-        else
-          (@min.nil? || value < @min) || (@max.nil? || value > @max)
-        end
-      else
-        (@min.nil? || value >= @min) && (@max.nil? || value <= @max)
-      end
+      result = (@min.nil? || value >= @min) && (@max.nil? || value <= @max)
+      @inverse ? not(result) : result
     end
 
     def ===(value)
