@@ -8,19 +8,19 @@ module Matchers
 
     def matches?(actual)
       @actual = actual
-      @actual.include? @expected
+      !@actual.include?(@expected)
     end
 
     def failure_message
-      "expected #{@actual} to contain #{@expected}" 
+      "expected #{@actual} to alert for value #{@expected}" 
     end
 
     def negative_failure_message
-      "expected #{@actual} not to contain #{@expected}"
+      "expected #{@actual} not to alert for value #{@expected}"
     end
   end
 
-  def contain(value)
+  def alert_if(value)
     Contain::new(value)
   end
 end
