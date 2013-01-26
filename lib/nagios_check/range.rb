@@ -9,7 +9,7 @@ module NagiosCheck
       unless tokens
         raise RuntimeError, "Pattern should be of form [@][~][min]:max" 
       end
-      @exclusive = true if tokens.include? "@"
+      @inverse = true if tokens.include? "@"
       case tokens[2]
       when nil, "" then @min = 0
       when '~' then @min = nil
@@ -19,8 +19,16 @@ module NagiosCheck
     end
 
     def include?(value)
-      if @exclusive
-        (@min.nil? || value > @min) && (@max.nil? || value < @max)
+      if @inverse
+        if @max.nil?
+          (@min.nil? || value < @min)
+        elsif @min.nil?
+          (@max.nil? || value > @max)
+        elsif @min == @max
+          false
+        else
+          (@min.nil? || value < @min) || (@max.nil? || value > @max)
+        end
       else
         (@min.nil? || value >= @min) && (@max.nil? || value <= @max)
       end
