@@ -4,7 +4,7 @@ require 'pp'
 
 describe NagiosCheck::Range do
   subject { @range }
-  before(:each) do 
+  before(:each) do
     description = example.metadata[:example_group][:description_args].first 
     if /^when pattern is (.*)/ =~ description
       @range = NagiosCheck::Range::new($1)
