@@ -23,14 +23,14 @@ module NagiosCheck
     return_val, status = 3, "UNKNOWN"
     begin
       parse_options
-      if @timeout
+      if @options.t
         check_with_timeout
       else
         check
       end
       return_val, status = finish
     rescue Timeout::Error
-      store_message "TIMEOUT after #{@timeout}s"
+      store_message "TIMEOUT after #{@options.t}s"
     rescue OptionParser::InvalidArgument, NagiosCheck::MissingOption => e
       store_message "CLI ERROR: #{e}"
     rescue => e
