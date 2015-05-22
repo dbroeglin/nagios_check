@@ -15,7 +15,7 @@ module Matchers
       "expected #{@actual} to alert for value #{@expected}" 
     end
 
-    def negative_failure_message
+    def failure_message_when_negated
       "expected #{@actual} not to alert for value #{@expected}"
     end
   end
