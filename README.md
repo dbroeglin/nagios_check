@@ -81,5 +81,5 @@ Released under the MIT License.  See the [MIT-LICENSE][license] file for further
 [license]: https://github.com/dbroeglin/nagios_check/blob/master/MIT-LICENSE 
 [nagios-dev]: http://nagiosplug.sourceforge.net/developer-guidelines.html
 
-Copyright 2011 Dominique Broeglin 
+Copyright 2011-2016 Dominique Broeglin 
 
