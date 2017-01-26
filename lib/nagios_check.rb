@@ -54,6 +54,7 @@ module NagiosCheck
   def finish
     raise "No value was provided" if @values.empty?
     value = @values.first.last
+    return [3, "UNKNOWN"] if value.nil?
     if @options.c && !@options.c.include?(value)
       return [2, "CRITICAL"]
     end
@@ -64,7 +65,7 @@ module NagiosCheck
   end
 
   def store_value(name, value, opts = {})
-    @values[name] = value.to_f
+    @values[name] = (value.nil? ? nil : value.to_f)
   end
 
   module ClassMethods
