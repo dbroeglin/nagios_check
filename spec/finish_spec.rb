@@ -48,6 +48,11 @@ describe OkTestCheck do
     context "when value is 10" do
       specify { subject.finish.should == [0, "OK"] }
     end
+
+    context "when nil is given" do
+      before { subject.store_value 'val', nil }
+      specify { subject.finish.should == [3, "UNKNOWN"] }
+    end
   end
 end
 
