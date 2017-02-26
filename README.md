@@ -68,15 +68,17 @@ If `store_value` is called multiple times, the value from the first call is used
 
 If the check method lasts more than 10 seconds, it times out and the returned value is UNKNOWN.
 
-An alternative shorter way of writting the above check would be:
+If the only metric we are interested is the time it takes to execute the check, an alternative shorter way of writting the above would be:
 
 ```ruby
 def check
-  time(value_name: 'duration' do
+  time(value_name: 'duration') do
     do_some_check(options.host, options.port)
   end
 end
 ```
+
+This check will execute `do_some_check` measure the time it takes to execute it and return both status and performance data labeled `duration`. 
 
 License
 -------
