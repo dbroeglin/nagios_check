@@ -1,6 +1,8 @@
 NagiosCheck
 ============
 
+[![Gem Version](https://badge.fury.io/rb/nagios_check.svg)](https://badge.fury.io/rb/nagios_check)
+
 Description
 -----------
 
