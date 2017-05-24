@@ -49,7 +49,9 @@ class SimpleCheck
 
   def check
     time = do_some_check(options.host, options.port)
+    
     store_value :duration, time
+    store_message "The check took #{time} seconds"
   end
 end
 
@@ -67,6 +69,8 @@ If the number passed to `store_value` is between 0 and 4 inclusive the result is
 If `store_value` is called multiple times, the value from the first call is used to determine the result. Multiple `store_value` calls can be used to include additional performance data in the output.
 
 If the check method lasts more than 10 seconds, it times out and the returned value is UNKNOWN.
+
+The text passed to `store_message` will be displayed next to the check status in the Nagios web interface and can be included in notifcation mails to provide some context in a human readable format.
 
 If the only metric we are interested is the time it takes to execute the check, an alternative shorter way of writting the above would be:
 
