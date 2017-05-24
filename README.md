@@ -70,7 +70,7 @@ If `store_value` is called multiple times, the value from the first call is used
 
 If the check method lasts more than 10 seconds, it times out and the returned value is UNKNOWN.
 
-The text passed to `store_message` will be displayed next to the check status in the Nagios web interface and can be included in notifcation mails to provide some context in a human readable format.
+Calling `store_message` is optional. However, the text passed to `store_message` will be displayed next to the check status in the Nagios web interface and can be included in notification mails to provide some context in a human readable format. 
 
 If the only metric we are interested is the time it takes to execute the check, an alternative shorter way of writting the above would be:
 
