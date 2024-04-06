@@ -12,6 +12,27 @@ module NagiosCheck
   attr_reader :options
   attr_accessor :message
 
+  class Result
+    attr_reader :exit_status, :output, :values
+
+    def initialize(exit_status, output, values)
+      @exit_status = exit_status
+      @output = output
+      @values = values
+    end
+
+    def critical?
+      exit_status == 2
+    end
+
+    def warning?
+      exit_status == 1
+    end
+
+    def ok?
+      exit_status == 0
+    end
+  end
 
   def prepare
     @values = {}
@@ -19,10 +40,16 @@ module NagiosCheck
   end
 
   def run
+    result = perform(ARGV)
+    puts result.output
+    exit result.exit_status
+  end
+
+  def perform(argv)
     prepare
     return_val, status = 3, "UNKNOWN"
     begin
-      parse_options
+      parse_options(argv)
       if @options.t
         check_with_timeout
       else
@@ -43,8 +70,8 @@ module NagiosCheck
         "#{name}=#{value};;;;"
       end.join(' ')
     end
-    puts msg
-    exit return_val
+
+    Result.new(return_val, msg, @values)
   end
 
   def store_message(message)

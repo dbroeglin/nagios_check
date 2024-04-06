@@ -85,6 +85,36 @@ end
 
 This check will execute `do_some_check` measure the time it takes to execute it and return both status and performance data labeled `duration`. 
 
+Writing Tests for Checks
+------------------------
+
+Checks can be integration tested by calling the `perform` method
+instead of the `run` method. `perform` takes an array of command line
+arguments and returns a `NagiosCheck::Result` object, which supports
+`ok?`, `warning?` and `critical?` methods to query the status and
+exposes the stored values:
+
+```ruby
+RSpec.describe SomeCheck do
+  it 'is ok by default' do
+    result = SomeCheck.new.perform(%w(-w 5 -c 10))
+
+    expect(result).to be_ok
+  end
+
+  it 'results in warning if there are more thn 5 uploads purchases' do
+    # Setup environment such that the check detects problems
+    # ...
+
+    result = SomeCheck.new.perform(%w(-w 5 -c 10))
+
+    expect(result).to be_warning
+    expect(result.values[:some_stored_value]).to eq(6)
+  end
+end
+
+```
+
 License
 -------
 Released under the MIT License.  See the [MIT-LICENSE][license] file for further details.
