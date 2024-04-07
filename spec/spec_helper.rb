@@ -1,30 +1,15 @@
 require 'nagios_check'
 
-module Matchers
-  class Contain
-    def initialize(expected)
-      @expected = expected
-    end
-
-    def matches?(actual)
-      @actual = actual
-      !@actual.include?(@expected)
-    end
-
-    def failure_message
-      "expected #{@actual} to alert for value #{@expected}" 
-    end
-
-    def negative_failure_message
-      "expected #{@actual} not to alert for value #{@expected}"
-    end
+RSpec::Matchers.define :alert_if do |expected|
+  match do |actual|
+    !actual.include?(expected)
   end
 
-  def alert_if(value)
-    Contain::new(value)
+  failure_message do |actual|
+    "expected that #{actual} would alert for value #{expected}"
   end
-end
 
-RSpec.configure do |config|  
-  config.include(Matchers)  
+  failure_message_when_negated do |actual|
+    "expected that #{actual} would not alert for value #{expected}"
+  end
 end

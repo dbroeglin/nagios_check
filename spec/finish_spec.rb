@@ -2,12 +2,12 @@ require 'spec_helper'
 def before_finish_test
   before(:each) do
     subject.prepare
-    description = example.metadata[:example_group][:example_group][:description_args].first
+    description = RSpec.current_example.example_group.metadata[:parent_example_group][:description_args].first
     if description.kind_of?(String) && /^when options are '(.*)'$/ =~ description
       subject.send :parse_options, $1.split
     end
 
-    description = example.metadata[:example_group][:description_args].first
+    description = RSpec.current_example.example_group.metadata[:description_args].first
     if description.kind_of?(String) && /^when value is (.*)$/ =~ description
       subject.store_value 'val', $1.to_f
     end
@@ -33,26 +33,24 @@ describe OkTestCheck do
   before_finish_test
 
   context "when options are ''" do
-    it "should fail when no value is given" do
-      lambda {
-        subject.finish
-      }.should raise_error(RuntimeError, "No value was provided")
-    end
+      it "should fail when no value is given" do
+        expect { subject.finish }.to raise_error(RuntimeError, "No value was provided")
+      end
 
-    context "when value is 0" do
-      specify { subject.finish.should == [0, "OK"] }
-    end
-    context "when value is 5" do
-      specify { subject.finish.should == [0, "OK"] }
-    end
-    context "when value is 10" do
-      specify { subject.finish.should == [0, "OK"] }
-    end
+      context "when value is 0" do
+        specify { expect(subject.finish).to eq([0, "OK"]) }
+      end
+      context "when value is 5" do
+        specify { expect(subject.finish).to eq([0, "OK"]) }
+      end
+      context "when value is 10" do
+        specify { expect(subject.finish).to eq([0, "OK"]) }
+      end
 
-    context "when nil is given" do
-      before { subject.store_value 'val', nil }
-      specify { subject.finish.should == [3, "UNKNOWN"] }
-    end
+      context "when nil is given" do
+        before { subject.store_value 'val', nil }
+        specify { expect(subject.finish).to eq([3, "UNKNOWN"]) }
+      end
   end
 end
 
@@ -61,21 +59,20 @@ describe WarningTestCheck do
 
   context "when options are '-w 10'" do
     context "when value is -1" do
-      specify { subject.finish.should == [1, "WARNING"] }
+      specify { expect(subject.finish).to eq([1, "WARNING"]) }
     end
     context "when value is 0" do
-      specify { subject.finish.should == [0, "OK"] }
+      specify { expect(subject.finish).to eq([0, "OK"]) }
     end
     context "when value is 5" do
-      specify { subject.finish.should == [0, "OK"] }
+      specify { expect(subject.finish).to eq([0, "OK"]) }
     end
     context "when value is 10" do
-      specify { subject.finish.should == [0, "OK"] }
+      specify { expect(subject.finish).to eq([0, "OK"]) }
     end
     context "when value is 11" do
-      specify { subject.finish.should == [1, "WARNING"] }
-    end
-  end
+      specify { expect(subject.finish).to eq([1, "WARNING"]) }
+    end  end
 end
 
 describe CriticalTestCheck do
@@ -83,25 +80,25 @@ describe CriticalTestCheck do
 
   context "when options are '-w 10 -c 20'" do
     context "when value is -1" do
-      specify { subject.finish.should == [2, "CRITICAL"] }
+      specify { expect(subject.finish).to eq([2, "CRITICAL"]) }
     end
     context "when value is 0" do
-      specify { subject.finish.should == [0, "OK"] }
+      specify { expect(subject.finish).to eq([0, "OK"]) }
     end
     context "when value is 5" do
-      specify { subject.finish.should == [0, "OK"] }
+      specify { expect(subject.finish).to eq([0, "OK"]) }
     end
     context "when value is 10" do
-      specify { subject.finish.should == [0, "OK"] }
+      specify { expect(subject.finish).to eq([0, "OK"]) }
     end
     context "when value is 15" do
-      specify { subject.finish.should == [1, "WARNING"] }
+      specify { expect(subject.finish).to eq([1, "WARNING"]) }
     end
     context "when value is 20" do
-      specify { subject.finish.should == [1, "WARNING"] }
+      specify { expect(subject.finish).to eq([1, "WARNING"]) }
     end
     context "when value is 21" do
-      specify { subject.finish.should == [2, "CRITICAL"] }
+      specify { expect(subject.finish).to eq([2, "CRITICAL"]) }
     end
   end
 end

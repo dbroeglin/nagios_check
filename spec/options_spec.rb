@@ -8,7 +8,7 @@ describe NagiosCheck do
 
     specify { subject.send :parse_options, [] }
   end
-  
+
   context "when warning is specified" do
     subject do
       Class::new do
@@ -19,19 +19,19 @@ describe NagiosCheck do
 
     it("works with no arguments"){ subject.send :parse_options, %w{} }
     specify { subject.send :parse_options, %w{-w 10} }
-   
+
     it "fails if -w has no argument" do
-      lambda {
-        subject.send :parse_options, %w{-w} 
-      }.should raise_error(OptionParser::MissingArgument)
+      expect {
+        subject.send :parse_options, %w{-w}
+      }.to raise_error(OptionParser::MissingArgument)
     end
     it "fails if -c is given" do
-      lambda {
-        subject.send :parse_options, %w{-c} 
-      }.should raise_error(OptionParser::InvalidOption)
+      expect {
+        subject.send :parse_options, %w{-c}
+      }.to raise_error(OptionParser::InvalidOption)
     end
   end
-  
+
   context "when critical is specified" do
     subject do
       Class::new do
@@ -42,20 +42,20 @@ describe NagiosCheck do
 
     it("works with no arguments"){ subject.send :parse_options, %w{} }
     specify { subject.send :parse_options, %w{-c 10} }
-   
+
     it "fails if -c has no argument" do
-      lambda {
-        subject.send :parse_options, %w{-c} 
-      }.should raise_error(OptionParser::MissingArgument)
+      expect {
+        subject.send :parse_options, %w{-c}
+      }.to raise_error(OptionParser::MissingArgument)
     end
-   
+
     it "fails if -w is given" do
-      lambda {
-        subject.send :parse_options, %w{-w} 
-      }.should raise_error(OptionParser::InvalidOption)
+      expect {
+        subject.send :parse_options, %w{-w}
+      }.to raise_error(OptionParser::InvalidOption)
     end
   end
-  
+
   context "when a non mandatory option is specified" do
     subject do
       Class::new do
@@ -69,27 +69,27 @@ describe NagiosCheck do
 
     it "works with '-a 10'" do
       subject.send :parse_options, %w{-a 10}
-      subject.options.a.should == "10"
-    end   
-    
+      expect(subject.options.a).to eq("10")
+    end
+
     it "works with '-b 20' and converts to int" do
       subject.send :parse_options, %w{-b 20}
-      subject.options.b.should == 20
-    end   
+      expect(subject.options.b).to eq(20)
+    end
 
     it "fails if -a has no argument" do
-      lambda {
-        subject.send :parse_options, %w{-a} 
-      }.should raise_error(OptionParser::MissingArgument)
+      expect {
+        subject.send :parse_options, %w{-a}
+      }.to raise_error(OptionParser::MissingArgument)
     end
-   
+
     it "fails if -w is given" do
-      lambda {
-        subject.send :parse_options, %w{-w} 
-      }.should raise_error(OptionParser::InvalidOption)
+      expect {
+        subject.send :parse_options, %w{-w}
+      }.to raise_error(OptionParser::InvalidOption)
     end
   end
-  
+
   context "when a mandatory option is specified in arg list" do
     subject do
       Class::new do
@@ -99,14 +99,14 @@ describe NagiosCheck do
     end
 
     it "fails if -a is not given" do
-      lambda {
-        subject.send :parse_options, %w{} 
-      }.should raise_error(NagiosCheck::MissingOption)
+      expect {
+        subject.send :parse_options, %w{}
+      }.to raise_error(NagiosCheck::MissingOption)
     end
 
-    it "parses option a 3.14" do 
-      subject.send :parse_options, %w{-a 3.14} 
-      subject.options.a.should == 3.14
+    it "parses option a 3.14" do
+      subject.send :parse_options, %w{-a 3.14}
+      expect(subject.options.a).to eq(3.14)
     end
   end
 
@@ -119,26 +119,26 @@ describe NagiosCheck do
     end
 
     it "fails if -a is not given" do
-      lambda {
-        subject.send :parse_options, %w{} 
-      }.should raise_error(NagiosCheck::MissingOption)
+      expect {
+        subject.send :parse_options, %w{}
+      }.to raise_error(NagiosCheck::MissingOption)
     end
 
-    it "parses option a 3.14" do 
-      subject.send :parse_options, %w{-a 3.14} 
-      subject.options.a.should == 3.14
+    it "parses option a 3.14" do
+      subject.send :parse_options, %w{-a 3.14}
+      expect(subject.options.a).to eq(3.14)
     end
   end
 
   shared_examples_for "default provided" do
     it "defaults to 3.14" do
-      subject.send :parse_options, %w{} 
-      subject.options.a.should == 3.14 
+      subject.send :parse_options, %w{}
+      expect(subject.options.a).to eq(3.14)
     end
 
-    it "parses option a at 1.4142" do 
+    it "parses option a at 1.4142" do
       subject.send :parse_options, %w{-a 1.4142}
-      subject.options.a.should == 1.4142
+      expect(subject.options.a).to eq(1.4142)
     end
   end
 
