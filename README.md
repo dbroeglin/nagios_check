@@ -2,7 +2,6 @@ NagiosCheck
 ============
 
 [![Gem Version](https://badge.fury.io/rb/nagios_check.svg)](https://badge.fury.io/rb/nagios_check)
-[![Build Status](https://travis-ci.org/dbroeglin/nagios_check.svg?branch=master)](https://travis-ci.org/dbroeglin/nagios_check)
 
 Description
 -----------
